@@ -1,0 +1,12 @@
+Metadata-Version: 2.4
+Name: skill-auditor
+Version: 0.1.0
+Summary: Static analysis and safety-scoring tool for LLM agent skills (like npm audit for AI tools)
+License: MIT
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0; extra == "dev"
+Requires-Dist: pytest-cov; extra == "dev"
+
+# Awesome-openclaw-slills
