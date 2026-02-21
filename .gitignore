@@ -14,3 +14,7 @@ htmlcov/
 # Editor
 .vscode/
 .idea/
+
+# Generated
+output/
+skills_index/skills.json

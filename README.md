@@ -1,4 +1,4 @@
-# Awesome OpenClaw Skills — Vetting Tool
+# Awesome OpenClaw Skills
 
 > **`skill-audit`** — static analysis and safety-scoring for LLM agent skills.
 > Like **npm audit**, but for AI tools.
@@ -8,6 +8,30 @@ The problem is **vetting** — Cisco research showed that third-party skills can
 silent data exfiltration.  This tool statically analyses Python and JSON skill definitions
 and scores them on a 0–100 safety scale so you can quickly identify dangerous skills
 before deploying them in your agent.
+
+---
+
+## Philosophy: Why We're Doing This
+
+**Trust through transparency.** AI agents are only as safe as the skills they run. The ClawHavoc incident (341 malicious skills) proved that unvetted third-party code is a real risk. We believe:
+
+1. **Users deserve to know what they install.** Skills can exfiltrate data, execute arbitrary commands, or leak secrets. Static analysis surfaces these risks before they run.
+
+2. **The ecosystem needs a safety layer.** Like `npm audit` for JavaScript, we need a standard way to score and rank skills. This project is that layer for OpenClaw.
+
+3. **Open is better.** All checks, scores, and methodologies are open and auditable. No black boxes. No vendor lock-in. Community can extend, critique, and improve.
+
+4. **One place to discover, vet, and use.** Instead of scattered wikis and opaque registries, we're building the **holy grail** — a unified index where skills are verified, ranked, documented, and usable. Browse, chat, rate, install.
+
+5. **Incremental beats perfect.** Thousands of tasks. We work through them one by one, with a backlog that grows and shrinks as the project evolves.
+
+---
+
+## Project Status
+
+- **Phase 4 MVP complete**: skill-audit, skill-sync, ranking, web app (browse, search, chat, rate, ClawHub links)
+- **Phase 5 in progress**: comments, reports, auth, deployment
+- See [docs/BACKLOG.md](docs/BACKLOG.md) for full task list
 
 ---
 
@@ -54,6 +78,18 @@ skill-audit path/to/my_skill.py
 
 ```bash
 skill-audit skills/
+```
+
+### Audit SKILL.md directories (AgentSkills format)
+
+```bash
+skill-audit path/to/skill_with_SKILL_md/
+```
+
+### Ranked output (composite score + tier)
+
+```bash
+skill-audit skills/ --rank
 ```
 
 ### Output as JSON (machine-readable)
@@ -147,28 +183,64 @@ Skill: summarise_document  │  Safety Score: 0/100  Grade: F
 ## Project Structure
 
 ```
-skill_auditor/
-├── __init__.py          # Public API
-├── analyzer.py          # SkillAnalyzer — loads skills and runs checks
-├── scorer.py            # SafetyScore — converts findings into a 0–100 score
+skill_auditor/           # Core audit engine
+├── __init__.py
+├── analyzer.py          # SkillAnalyzer — .py, .json, SKILL.md directories
+├── scorer.py            # SafetyScore — 0–100, grade A–F
 ├── report.py            # Report — text and JSON output
 ├── cli.py               # skill-audit command-line tool
-└── checks/
-    ├── base.py              # BaseCheck, Finding, CheckResult, Severity
-    ├── data_exfiltration.py # DATA_EXFIL check
-    ├── network_access.py    # NETWORK_ACCESS check
-    ├── permission_scope.py  # PERMISSION_SCOPE check
-    ├── shell_injection.py   # SHELL_INJECTION check
-    └── env_leakage.py       # ENV_LEAKAGE check
+├── adapters/
+│   └── skill_md.py      # AgentSkills SKILL.md parsing
+└── checks/              # Security checks (DATA_EXFIL, SHELL_INJECTION, etc.)
 
-examples/skills/
-├── safe_weather_skill.py        # Safe — GET-only, documented network access
-├── safe_calculator_skill.json   # Safe — pure computation, no external calls
-└── unsafe_malicious_skill.py    # UNSAFE — exfiltration + shell + env leakage demo
+ingestion/               # Skill sync from ClawHub and local sources
+├── sync.py              # skill-sync — populate skills_index
+├── clawhub_fetch.py     # ClawHub API/CLI fetch
+└── schema.py            # SkillRecord schema
 
-tests/
-├── test_checks.py    # Unit tests for each individual check
-└── test_analyzer.py  # Integration tests for SkillAnalyzer, SafetyScore, Report, CLI
+ranking/                 # Composite scoring and usage docs
+├── engine.py            # Rank by safety, format, doc, community
+├── usage.py             # Auto-generate USAGE.md
+└── registry.py          # Write registry.json
+
+evaluation/              # Verification and regression tests
+├── fixtures/            # Known-safe and known-unsafe skills
+├── test_static.py       # Audit fixture regression
+└── test_schema.py       # AgentSkills format validation
+
+web/                     # Next.js app — browse, chat, rate, use
+docs/
+├── BACKLOG.md           # Task backlog (phases 1–5)
+├── PROJECT_STATUS.md    # Current status snapshot
+skills_index/            # Synced skills and registry (generated)
+```
+
+### SKILL.md (AgentSkills format)
+
+Audit directories containing `SKILL.md`:
+
+```bash
+skill-audit path/to/skill_dir/
+skill-audit examples/skills/ --rank
+```
+
+### Sync and registry
+
+```bash
+skill-sync                           # Sync from ClawHub (CLI) + local
+skill-sync --no-clawhub              # Local only
+skill-sync --incremental             # Delta merge with existing
+skill-sync --clawhub-limit 500       # Fetch more from ClawHub
+python scripts/build_registry.py     # Audit + rank → registry.json
+```
+
+**ClawHub fetch**: Set `CLAWHUB_API_URL` for HTTP API, or use `clawhub` CLI (installed separately).
+
+### Web app
+
+```bash
+cd web && npm install && npm run dev
+# Open http://localhost:3000 — browse, search, chat, rate, copy install cmd
 ```
 
 ---

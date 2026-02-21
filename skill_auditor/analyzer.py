@@ -22,6 +22,8 @@ class SkillAnalyzer:
       registered checks are run.
     * **JSON file** (``.json``) — expected to be an OpenAI-style function
       definition or a list of such definitions.
+    * **SKILL.md directory** — AgentSkills format: directory containing
+      SKILL.md, with optional scripts/ and inline code blocks.
     * **Raw string** — pass ``source_code=`` directly to :meth:`analyze_source`.
     """
 
@@ -34,7 +36,7 @@ class SkillAnalyzer:
     # ------------------------------------------------------------------
 
     def analyze_file(self, path: Union[str, Path]) -> "AnalysisResult":
-        """Analyze a single skill file (.py or .json)."""
+        """Analyze a single skill file (.py, .json) or SKILL.md directory."""
         path = Path(path)
         if not path.exists():
             raise FileNotFoundError(f"Skill file not found: {path}")
@@ -42,7 +44,18 @@ class SkillAnalyzer:
         source_code = ""
         metadata: dict = {}
 
-        if path.suffix == ".py":
+        if path.is_dir():
+            # AgentSkills SKILL.md directory
+            skill_md = path / "SKILL.md"
+            if skill_md.exists():
+                from .adapters.skill_md import load_skill_md
+                source_code, metadata = load_skill_md(path)
+            else:
+                raise ValueError(
+                    f"Directory {path} does not contain SKILL.md. "
+                    "Expected an AgentSkills-format skill directory."
+                )
+        elif path.suffix == ".py":
             source_code = path.read_text(encoding="utf-8")
             metadata = _extract_metadata_from_python(source_code)
         elif path.suffix in (".json",):
@@ -51,9 +64,12 @@ class SkillAnalyzer:
             # A JSON skill may embed a `source` key with inline Python
             source_code = metadata.get("source", "")
         else:
-            raise ValueError(f"Unsupported skill file type: {path.suffix!r}")
+            raise ValueError(
+                f"Unsupported skill file type: {path.suffix!r}. "
+                "Use .py, .json, or a directory containing SKILL.md."
+            )
 
-        metadata.setdefault("name", path.stem)
+        metadata.setdefault("name", path.stem if path.is_file() else path.name)
         return self.analyze_source(source_code, metadata)
 
     def analyze_source(self, source_code: str, skill_metadata: Optional[dict] = None) -> "AnalysisResult":
@@ -144,4 +160,5 @@ class AnalysisResult:
             "score": self.score.to_dict(),
             "passed": self.passed,
             "checks": [r.to_dict() for r in self.check_results],
+            "metadata": self.metadata,
         }

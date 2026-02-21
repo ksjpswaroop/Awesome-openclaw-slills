@@ -9,10 +9,16 @@ description = "Static analysis and safety-scoring tool for LLM agent skills (lik
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.9"
-dependencies = []
+dependencies = [
+    "PyYAML>=6.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["skill_auditor*", "ingestion*", "ranking*"]
 
 [project.scripts]
 skill-audit = "skill_auditor.cli:main"
+skill-sync = "ingestion.sync:main"
 
 [project.optional-dependencies]
 dev = [
@@ -21,5 +27,5 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests", "evaluation"]
 addopts = "-v"

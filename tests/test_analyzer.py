@@ -116,6 +116,27 @@ class TestSkillAnalyzer:
         with pytest.raises(ValueError, match="Unsupported"):
             self.analyzer.analyze_file(tmp)
 
+    def test_safe_skill_md_directory(self):
+        result = self.analyzer.analyze_file(EXAMPLES_DIR / "safe_skill")
+        assert result.skill_name == "safe-skill"
+        assert result.passed
+        assert result.score.grade in ("A", "B")
+
+    def test_unsafe_skill_md_directory(self):
+        result = self.analyzer.analyze_file(EXAMPLES_DIR / "unsafe_skill")
+        assert result.skill_name == "unsafe-skill"
+        assert not result.passed
+        assert result.score.critical > 0
+
+    def test_skill_md_with_scripts_directory(self):
+        result = self.analyzer.analyze_file(EXAMPLES_DIR / "safe_skill_with_scripts")
+        assert result.skill_name == "safe-skill-with-scripts"
+        assert result.passed
+
+    def test_directory_without_skill_md_raises(self, tmp_path):
+        with pytest.raises(ValueError, match="SKILL.md"):
+            self.analyzer.analyze_file(tmp_path)
+
 
 # ---------------------------------------------------------------------------
 # Report
