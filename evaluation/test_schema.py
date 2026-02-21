@@ -10,17 +10,11 @@ import pytest
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
 
 
-def _parse_frontmatter(text: str) -> dict:
-    """Extract YAML frontmatter."""
-    match = re.match(r"^---\s*\n(.*?)\n---\s*\n", text, re.DOTALL)
-    if not match:
-        return {}
-    try:
-        import yaml
-        data = yaml.safe_load(match.group(1))
-        return dict(data) if isinstance(data, dict) else {}
-    except Exception:
-        return {}
+def _get_metadata(skill_dir: Path) -> dict:
+    """Get frontmatter metadata via adapter (reliable parsing)."""
+    from skill_auditor.adapters.skill_md import load_skill_md
+    _, meta = load_skill_md(skill_dir)
+    return meta
 
 
 def _validate_skills_schema(metadata: dict) -> list[str]:
@@ -43,15 +37,11 @@ class TestSchemaValidation:
     """SKILL.md format compliance tests."""
 
     def test_safe_skill_has_valid_schema(self):
-        skill_md = FIXTURES_DIR / "safe_skill" / "SKILL.md"
-        text = skill_md.read_text()
-        meta = _parse_frontmatter(text)
+        meta = _get_metadata(FIXTURES_DIR / "safe_skill")
         errors = _validate_skills_schema(meta)
         assert errors == [], f"Schema errors: {errors}"
 
     def test_unsafe_skill_has_valid_schema(self):
-        skill_md = FIXTURES_DIR / "unsafe_skill" / "SKILL.md"
-        text = skill_md.read_text()
-        meta = _parse_frontmatter(text)
+        meta = _get_metadata(FIXTURES_DIR / "unsafe_skill")
         errors = _validate_skills_schema(meta)
         assert errors == [], f"Schema errors: {errors}"

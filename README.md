@@ -11,6 +11,15 @@ before deploying them in your agent.
 
 ---
 
+## Contents
+
+- [Skills](#skills) — Categorized list of OpenClaw skills (awesome-list format)
+- [Philosophy](#philosophy-why-were-doing-this) — Why we built this
+- [Quick Start](#quick-start) — Install and audit skills
+- [Project Structure](#project-structure) — Repo layout
+
+---
+
 ## Philosophy: Why We're Doing This
 
 **Trust through transparency.** AI agents are only as safe as the skills they run. The ClawHavoc incident (341 malicious skills) proved that unvetted third-party code is a real risk. We believe:
@@ -32,6 +41,30 @@ before deploying them in your agent.
 - **Phase 4 MVP complete**: skill-audit, skill-sync, ranking, web app (browse, search, chat, rate, ClawHub links)
 - **Phase 5 in progress**: comments, reports, auth, deployment
 - See [docs/BACKLOG.md](docs/BACKLOG.md) for full task list
+
+---
+
+## Skills
+
+**[→ Full skills list: SKILLS.md](SKILLS.md)** — organized by category like other awesome repos.
+
+| Category | Skills |
+|----------|--------|
+| [AI/ML](SKILLS.md#ai-ml) | image-generator, summarize, translate |
+| [Productivity](SKILLS.md#productivity) | calendar-sync, notion-integration |
+| [Development](SKILLS.md#development) | github-integration, claude-code-usage, sqlite-query |
+| [Communication](SKILLS.md#communication) | slack-integration, discord-bot, email-sender |
+| [Web](SKILLS.md#web) | web-search |
+| [Utility](SKILLS.md#utility) | calculator, file-manager, csv-processor, json-formatter |
+| [Science](SKILLS.md#science) | market-research |
+| [Media](SKILLS.md#media) | pdf-tools |
+| [Social](SKILLS.md#social) | seo-content-tools |
+| [Location](SKILLS.md#location) | weather |
+| [Smart Home](SKILLS.md#smart-home) | home-assistant |
+
+Install any skill: `clawhub install <skill-name>`.
+
+**Regenerate the list** (after sync): `python scripts/generate_awesome_list.py` — add `--sync` to fetch from ClawHub first.
 
 ---
 
@@ -212,7 +245,8 @@ web/                     # Next.js app — browse, chat, rate, use
 docs/
 ├── BACKLOG.md           # Task backlog (phases 1–5)
 ├── PROJECT_STATUS.md    # Current status snapshot
-skills_index/            # Synced skills and registry (generated)
+SKILLS.md                # Awesome-list of all skills (generated)
+skills_index/            # Synced skills, registry, curated seeds
 ```
 
 ### SKILL.md (AgentSkills format)

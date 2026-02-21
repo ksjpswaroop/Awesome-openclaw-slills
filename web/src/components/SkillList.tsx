@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Skill } from "@/app/page";
+import { groupByCategory } from "@/lib/categories";
 
 type SkillListProps = {
   skills: Skill[];
@@ -10,9 +11,8 @@ type SkillListProps = {
 
 const CLAWHUB_SKILL_URL = "https://clawhub.ai/skills";
 
-function SkillCard({ skill }: { skill: Skill }) {
+function SkillRow({ skill, searchMatch }: { skill: Skill; searchMatch?: boolean }) {
   const [copied, setCopied] = useState(false);
-  const [stars, setStars] = useState(0);
 
   const handleCopy = () => {
     const cmd = skill.install_cmd || `clawhub install ${skill.name}`;
@@ -22,64 +22,36 @@ function SkillCard({ skill }: { skill: Skill }) {
   };
 
   return (
-    <article className="rounded-lg border border-zinc-700 bg-zinc-900/30 p-4 transition hover:border-zinc-600">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-zinc-100 truncate">{skill.name}</h3>
-          <p className="mt-1 line-clamp-2 text-sm text-zinc-400">
-            {skill.description || "No description"}
-          </p>
-          <div className="mt-2 flex flex-wrap gap-2">
-            <span
-              className={`rounded px-2 py-0.5 text-xs font-medium ${
-                skill.grade === "A"
-                  ? "bg-emerald-500/20 text-emerald-400"
-                  : skill.grade === "B"
-                    ? "bg-amber-500/20 text-amber-400"
-                    : "bg-zinc-600/50 text-zinc-400"
-              }`}
-            >
-              Grade {skill.grade}
-            </span>
-            <span className="rounded bg-zinc-700/50 px-2 py-0.5 text-xs text-zinc-400">
-              {skill.tier}
-            </span>
-          </div>
-        </div>
-        <div className="flex flex-col items-end gap-2">
-          <button
-            onClick={() => setStars((s) => (s >= 5 ? 0 : s + 1))}
-            className="text-amber-400 hover:text-amber-300"
-            title="Rate"
-          >
-            {"★".repeat(stars)}{"☆".repeat(5 - stars)}
-          </button>
-          <div className="flex gap-1">
-            <a
-              href={`${CLAWHUB_SKILL_URL}/${encodeURIComponent(skill.name)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded bg-zinc-700 px-3 py-1.5 text-xs font-medium hover:bg-zinc-600"
-            >
-              View
-            </a>
-            <button
-              onClick={handleCopy}
-              className="rounded bg-zinc-700 px-3 py-1.5 text-xs font-medium hover:bg-zinc-600"
-            >
-              {copied ? "Copied!" : "Copy Install"}
-            </button>
-          </div>
-        </div>
+    <div className="group flex items-start justify-between gap-4 border-b border-zinc-800/50 py-3 last:border-0 hover:bg-zinc-800/20">
+      <div className="min-w-0 flex-1">
+        <a
+          href={`${CLAWHUB_SKILL_URL}/${encodeURIComponent(skill.name)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium text-amber-400 hover:text-amber-300"
+        >
+          {skill.name}
+        </a>
+        {skill.grade && (skill.grade === "A" || skill.grade === "B") && (
+          <span className="ml-2 rounded bg-emerald-500/20 px-1.5 py-0.5 text-xs text-emerald-400">
+            {skill.grade}
+          </span>
+        )}
+        <p className="mt-0.5 text-sm text-zinc-400">{skill.description || "No description"}</p>
       </div>
-      <div className="mt-3 text-xs text-zinc-500">
-        {skill.install_cmd || `clawhub install ${skill.name}`}
-      </div>
-    </article>
+      <button
+        onClick={handleCopy}
+        className="shrink-0 rounded bg-zinc-700 px-2 py-1 text-xs font-medium opacity-0 transition group-hover:opacity-100 hover:bg-zinc-600"
+      >
+        {copied ? "Copied!" : "Copy install"}
+      </button>
+    </div>
   );
 }
 
 export function SkillList({ skills, loading }: SkillListProps) {
+  const { groups, order } = groupByCategory(skills);
+
   if (loading) {
     return (
       <div className="flex flex-1 items-center justify-center p-12">
@@ -102,12 +74,26 @@ export function SkillList({ skills, loading }: SkillListProps) {
   }
 
   return (
-    <div className="mx-auto w-full max-w-6xl flex-1 px-6 py-8">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {skills.map((s) => (
-          <SkillCard key={s.name} skill={s} />
-        ))}
-      </div>
+    <div className="mx-auto w-full max-w-4xl flex-1 px-6 py-8">
+      <p className="mb-6 text-sm text-zinc-500">
+        {skills.length} skills · Awesome-list style · Install: <code>clawhub install &lt;name&gt;</code>
+      </p>
+      {order.map((cat) => {
+        const items = groups[cat] || [];
+        if (items.length === 0) return null;
+        return (
+          <section key={cat} className="mb-8">
+            <h2 className="mb-4 text-lg font-semibold text-zinc-200">{cat}</h2>
+            <div className="rounded-lg border border-zinc-700/50 bg-zinc-900/30 px-4">
+              {items
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((s) => (
+                  <SkillRow key={s.name} skill={s} />
+                ))}
+            </div>
+          </section>
+        );
+      })}
     </div>
   );
 }

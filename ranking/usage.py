@@ -15,9 +15,13 @@ def generate_usage_doc(
 
     Template: Install command, prerequisites (env, bins), example invocation.
     """
-    meta = metadata or {}
-    openclaw = meta.get("openclaw") or meta.get("metadata", {}).get("openclaw") or {}
-    if isinstance(openclaw, str):
+    meta = metadata if isinstance(metadata, dict) else {}
+    _inner = meta.get("metadata")
+    if isinstance(_inner, dict):
+        openclaw = meta.get("openclaw") or _inner.get("openclaw") or {}
+    else:
+        openclaw = meta.get("openclaw") or {}
+    if not isinstance(openclaw, dict):
         openclaw = {}
     requires = openclaw.get("requires", {})
     env_vars = requires.get("env", [])

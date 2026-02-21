@@ -8,6 +8,7 @@ import { Header } from "@/components/Header";
 export type Skill = {
   name: string;
   description?: string;
+  category?: string;
   grade: string;
   tier: string;
   safety_score: number;

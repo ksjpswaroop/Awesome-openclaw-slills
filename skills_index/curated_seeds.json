@@ -1,0 +1,22 @@
+[
+  {"name": "github-integration", "description": "Manage Issues, PRs, and repos with Webhook triggers. Complete GitHub workflow automation for OpenClaw agents.", "category": "Development"},
+  {"name": "notion-integration", "description": "Deep integration with Notion for managing notes, databases, and pages directly from your OpenClaw agent.", "category": "Productivity"},
+  {"name": "slack-integration", "description": "Connect your OpenClaw agent to Slack for seamless team communication and automation workflows.", "category": "Communication"},
+  {"name": "discord-bot", "description": "Build powerful Discord bots with your OpenClaw agent. Automate server management and community engagement.", "category": "Communication"},
+  {"name": "claude-code-usage", "description": "Check Claude Code OAuth usage limits and monitor your API consumption in real-time.", "category": "Development"},
+  {"name": "seo-content-tools", "description": "Generate and optimize SEO content with advanced AI-powered writing and analysis tools.", "category": "Social"},
+  {"name": "home-assistant", "description": "Control your smart home devices through Home Assistant integration. Complete IoT automation platform.", "category": "Smart Home"},
+  {"name": "market-research", "description": "Automated data collection and market analysis tools for competitive intelligence and research.", "category": "Science"},
+  {"name": "web-search", "description": "Search the web for information. Integrates with search engines for real-time lookup.", "category": "Web"},
+  {"name": "file-manager", "description": "Read, write, and organize files. Useful for document processing and workspace management.", "category": "Utility"},
+  {"name": "email-sender", "description": "Send emails via SMTP. Schedule and automate email workflows.", "category": "Communication"},
+  {"name": "calendar-sync", "description": "Sync with Google Calendar, Outlook. Schedule meetings and manage events.", "category": "Productivity"},
+  {"name": "pdf-tools", "description": "Extract text, merge, split PDFs. Document processing utilities.", "category": "Media"},
+  {"name": "image-generator", "description": "Generate images via DALL-E, Stable Diffusion, or other image AI APIs.", "category": "AI/ML"},
+  {"name": "sqlite-query", "description": "Query SQLite databases. Run SQL and export results.", "category": "Development"},
+  {"name": "json-formatter", "description": "Format, validate, and transform JSON data.", "category": "Utility"},
+  {"name": "csv-processor", "description": "Read, write, and transform CSV files. Data import and export.", "category": "Utility"},
+  {"name": "weather", "description": "Get current weather and forecasts. Open-Meteo and other weather APIs.", "category": "Location"},
+  {"name": "translate", "description": "Translate text between languages. Supports multiple translation providers.", "category": "AI/ML"},
+  {"name": "summarize", "description": "Summarize long documents and text. Extract key points.", "category": "AI/ML"}
+]
