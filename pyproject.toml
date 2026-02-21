@@ -8,6 +8,7 @@ version = "0.1.0"
 description = "Static analysis and safety-scoring tool for LLM agent skills (like npm audit for AI tools)"
 readme = "README.md"
 license = { text = "MIT" }
+authors = [{name = "Swaroop"}]
 requires-python = ">=3.9"
 dependencies = [
     "PyYAML>=6.0",
